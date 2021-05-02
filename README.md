@@ -30,17 +30,26 @@ You can install the package via composer:
 composer require ccuffs/laravel-telegram-bot
 ```
 
-You can publish and run the migrations with:
+Publish config and migrations:
 
 ```bash
-php artisan vendor:publish --provider="Ccuffs\TelegramBot\TelegramBotServiceProvider" --tag="laravel-telegram-bot-migrations"
+php artisan vendor:publish --provider="CCUFFS\TelegramBot\TelegramBotServiceProvider"
+```
+
+Run the migrations:
+
+```bash
 php artisan migrate
 ```
 
-You can publish the config file with:
-```bash
-php artisan vendor:publish --provider="Ccuffs\TelegramBot\TelegramBotServiceProvider" --tag="laravel-telegram-bot-config"
+### Usage
+
+```php
+$bot = new CCUFFS\TelegramBot();
+echo $bot->echoPhrase('Hello, Spatie!');
 ```
+
+#### Configuration
 
 This is the contents of the published config file:
 
@@ -49,12 +58,6 @@ return [
 ];
 ```
 
-### Usage
-
-```php
-$laravel-telegram-bot = new Ccuffs\TelegramBot();
-echo $laravel-telegram-bot->echoPhrase('Hello, Spatie!');
-```
 
 ### Testing
 

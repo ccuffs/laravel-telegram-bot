@@ -18,7 +18,10 @@ class TelegramBotServiceProvider extends PackageServiceProvider
         $package
             ->name('laravel-telegram-bot')
             ->hasConfigFile()
-            ->hasMigration('create_laravel_telegram_bot_table')
-            ->hasCommand(TelegramBotCommand::class);
+            ->hasMigration('create_telegram_bot_table')
+            ->hasRoutes(['web'])
+            ->hasCommands([
+                TelegramBotCommand::class
+            ]);
     }
 }
