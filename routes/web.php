@@ -1,6 +1,8 @@
 <?php
 
+use CCUFFS\TelegramBot\TelegramBot;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/ccuffs/bots/telegram', function () {
-    return 'Hey!';
+Route::post('/ccuffs/bot/telegram', function (Request $request) {
+    $bot = new TelegramBot();
+    $bot->processWebhook($request);
 });
