@@ -4,7 +4,7 @@ namespace CCUFFS\TelegramBot;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use CCUFFS\TelegramBot\Commands\TelegramBotCommand;
+use CCUFFS\TelegramBot\Commands\TelegramBotSetupCommand;
 
 class TelegramBotServiceProvider extends PackageServiceProvider
 {
@@ -17,11 +17,11 @@ class TelegramBotServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('laravel-telegram-bot')
-            ->hasConfigFile()
+            ->hasConfigFile('telegrambot')
             ->hasMigration('create_telegram_bot_table')
             ->hasRoutes(['web'])
             ->hasCommands([
-                TelegramBotCommand::class
+                TelegramBotSetupCommand::class
             ]);
     }
 }

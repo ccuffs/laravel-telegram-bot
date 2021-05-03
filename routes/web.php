@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('/ccuffs/bot/telegram', function (Request $request) {
+Route::post(config('telegram-bot.webhook_route'), function (Request $request) {
     $bot = new TelegramBot();
     $bot->processWebhook($request);
 });
