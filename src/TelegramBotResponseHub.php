@@ -2,42 +2,37 @@
 
 namespace CCUFFS\TelegramBot;
 
+use CCUFFS\TelegramBot\Events\PayloadReceived;
 use Longman\TelegramBot\Commands\SystemCommand;
 use Longman\TelegramBot\Entities\ServerResponse;
 use Longman\TelegramBot\Request;
+use Illuminate\Support\Facades\Log;
 
 class TelegramBotResponseHub
 {
-    protected SystemCommand $sys;
-    protected $message;
-    protected $sender;    
-
-    public function __contructor() {
-    }
-
-    protected function processGenericCommand()
-    {
-        $user_id = $this->message->getFrom()->getId();
-        $command = $this->message->getCommand();
+    protected function processIncomingCmd(SystemCommand $cmd) {
+        $message = $cmd->getMessage();
+        return $cmd->replyToChat("Hi, sup?");
     }
 
     public function handle(SystemCommand $cmd): ServerResponse {
         try {
-            $this->sys = $cmd;
-            $this->message = $cmd->getMessage();
-            $this->user = $this->message->getFrom();
+            // Inform all listeners that a payload has arrived
+            event(new PayloadReceived($cmd));
 
-            // Any of the following methods will return a result if they want to
-            // stop the chaining of other methods, otherwise everything will be checked.
-
-            // TODO: process command/text using laravel events
-            return $cmd->replyToChat("Hi");
-            if($result = $this->processGenericCommand()) { return $result; }
+            $result = $this->processIncomingCmd($cmd);
+            
+            if($result) {
+                return $result;
+            }
             
             // If we got here, we have no action to reply...
             return Request::emptyResponse();
 
         } catch(\Exception $e) {
+            Log::error($e);
+
+            // TODO: add config to allow reploy of errors
             return $cmd->replyToChat("💀 Error: " . $e->getMessage() . "\n" . '`'.$e->getTraceAsString().'`',
                                 ['parse_mode' => 'markdown']);
         }
