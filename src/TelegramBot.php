@@ -5,6 +5,7 @@ namespace CCUFFS\TelegramBot;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\TelegramLog;
 use Longman\TelegramBot\Exception\TelegramException;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -13,13 +14,18 @@ class TelegramBot
     public function __contructor() {
     }
 
-    protected function initLogger() {
+    protected function initTelegramLibInternals() {
         TelegramLog::initialize(
             // Main logger that handles all 'debug' and 'error' logs.
             Log::getLogger(),
             // Updates logger for raw updates.
             Log::getLogger()
         );
+        
+        \Longman\TelegramBot\Request::setClient(new Client([
+            'base_uri' => 'https://api.telegram.org',
+            'verify' => false // TODO: create a new Guzzle client using CA certs
+        ]));        
     }
 
     protected function createTelegramInstance() {
@@ -27,10 +33,8 @@ class TelegramBot
         $botUsername = config('telegrambot.bot_username');
         $admins = config('telegrambot.admins', []);
 
-        $this->initLogger();
-
-        //\Longman\TelegramBot\Request::setClient($guzz_client);
         $telegram = new Telegram($apiKey, $botUsername);
+        $this->initTelegramLibInternals();
 
         // Enable admin users
         $telegram->enableAdmins($admins);
