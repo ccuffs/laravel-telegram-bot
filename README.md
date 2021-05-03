@@ -65,6 +65,10 @@ return [
 composer test
 ```
 
+```bash
+ curl -v -k -X POST -H "Content-Type: application/json" -H "Cache-Control: no-cache" --data @message-with-text.json "http://localhost.dev/ccuffs/bot/telegram"
+```
+
 ## 🤝 Contribute
 
 Your help is most welcome regardless of form! Check out the [CONTRIBUTING.md](CONTRIBUTING.md) file for all ways you can contribute to the project. For example, [suggest a new feature](https://github.com/ccuffs/template-english/issues/new?assignees=&labels=&template-english=feature_request.md&title=), [report a problem/bug](https://github.com/ccuffs/template-english/issues/new?assignees=&labels=bug&template-english=bug_report.md&title=), [submit a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests), or simply use the project and comment your experience. You are encourage to participate as much as possible, but stay tuned to the [code of conduct](./CODE_OF_CONDUCT.md) before making any interaction with other community members.

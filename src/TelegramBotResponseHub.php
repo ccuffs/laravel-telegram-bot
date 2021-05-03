@@ -31,6 +31,7 @@ class TelegramBotResponseHub
             // stop the chaining of other methods, otherwise everything will be checked.
 
             // TODO: process command/text using laravel events
+            return $cmd->replyToChat("Hi");
             if($result = $this->processGenericCommand()) { return $result; }
             
             // If we got here, we have no action to reply...

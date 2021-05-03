@@ -2,6 +2,7 @@
 
 namespace CCUFFS\TelegramBot\Commands;
 
+use CCUFFS\TelegramBot\TelegramBot;
 use Illuminate\Console\Command;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\Exception\TelegramException;
@@ -12,20 +13,12 @@ class TelegramBotSetupCommand extends Command
 
     public $description = "Setup the Telegram bot to use Telegram's API";
 
-    protected function getWebhookUrl() {
-        $hookUrl = config('telegrambot.webhook_url', '');
-        
-        if(empty($hookUrl)) {
-            $hookUrl = config('app.url') . '/' . config('telegrambot.webhook_route');
-        } 
-        
-        return $hookUrl;
-    }
-
     protected function assertConfigsAreOk() {
+        $bot = new TelegramBot();
+
         $apiKey = config('telegrambot.api_key', '');
         $botUsername = config('telegrambot.bot_username', '');
-        $hookUrl = $this->getWebhookUrl();
+        $hookUrl = $bot->getWebhookUrl();
         
         if(empty($apiKey)) {
             $this->error('Problem: empty entry "api_key" in "config/telegrambot.php" file.');
@@ -43,39 +36,40 @@ class TelegramBotSetupCommand extends Command
         }              
     }
 
-    protected function setWebhook() {
-        $apiKey = config('telegrambot.api_key');
-        $botUsername = config('telegrambot.bot_username');
-        $hookUrl = $this->getWebhookUrl();
-
+    protected function setup() {
         try {
-            $telegram = new Telegram($apiKey, $botUsername);
-            
-            $this->comment('Setting webhook: "$hookUrl"');
-            $result = $telegram->setWebhook($hookUrl);
+            $bot = new TelegramBot();
+            $hookUrl = $bot->getWebhookUrl();
+            $botUsername = config('telegrambot.bot_username', '');            
+
+            $this->line('Setting up Telegram API');
+            $this->line("  Your webhook URL: <fg=yellow>$hookUrl</>");
+            $this->line("  Your bot username: <fg=yellow>$botUsername</>");
+
+            $result = $bot->setupTelegraApi();
 
             if ($result->isOk()) {
-                $this->comment('All good!');
-                $this->comment($result->getDescription());
-            } else {
-                $this->info('Something wrong happened. Check your webhook URL.');
+                $this->info('Operation completed!');
             }
+            $this->line('Telegram API responde: <fg=yellow>' . $result->getDescription() . '</>');
+
         } catch (TelegramException $e) {
             $this->error('Failed: ' . $e->getMessage());
             exit(2);
         }
     }
 
-    protected function unsetWebhook() {
-        $apiKey = config('telegrambot.api_key', '');
-        $botUsername = config('telegrambot.bot_username', '');
-
+    protected function undoSetup() {
         try {
-            $telegram = new Telegram($apiKey, $botUsername);
-            $result = $telegram->deleteWebhook();
-
-            $this->comment($result->getDescription());
+            $bot = new TelegramBot();
             
+            $this->line('Undoing Telegram API setup');
+
+            $result = $bot->resetTelegraApiSetup();
+
+            $this->info('Setup with Telegram API cleared.');
+            $this->line('Telegram API responde: <fg=yellow>' . $result->getDescription() . '</>');
+
         } catch (TelegramException $e) {
             $this->error('Failed: ' . $e->getMessage());
             exit(3);
@@ -85,6 +79,6 @@ class TelegramBotSetupCommand extends Command
     public function handle()
     {
         $this->assertConfigsAreOk();
-        $this->setWebhook();
+        $this->setup();
     }
 }
