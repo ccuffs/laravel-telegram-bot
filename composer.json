@@ -17,9 +17,10 @@
     ],
     "require": {
         "php": "^7.3|^8.0",
-        "spatie/laravel-package-tools": "^1.4.3",
+        "composer/ca-bundle": "^1.2",
         "illuminate/contracts": "^8.37",
-        "longman/telegram-bot": "^0.70"        
+        "longman/telegram-bot": "^0.70",
+        "spatie/laravel-package-tools": "^1.4.3"
     },
     "require-dev": {
         "brianium/paratest": "^6.2",

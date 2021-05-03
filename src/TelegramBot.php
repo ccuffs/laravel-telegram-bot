@@ -5,27 +5,28 @@ namespace CCUFFS\TelegramBot;
 use Longman\TelegramBot\Telegram;
 use Longman\TelegramBot\TelegramLog;
 use Longman\TelegramBot\Exception\TelegramException;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class TelegramBot
 {
+    const TELEGRAM_API_BASE_URI = 'https://api.telegram.org';
+
     public function __contructor() {
     }
 
     protected function initTelegramLibInternals() {
         TelegramLog::initialize(
-            // Main logger that handles all 'debug' and 'error' logs.
-            Log::getLogger(),
-            // Updates logger for raw updates.
-            Log::getLogger()
+            Log::getLogger(), // Main logger that handles all 'debug' and 'error' logs.
+            Log::getLogger()  // Updates logger for raw updates.
         );
         
-        \Longman\TelegramBot\Request::setClient(new Client([
-            'base_uri' => 'https://api.telegram.org',
-            'verify' => false // TODO: create a new Guzzle client using CA certs
-        ]));        
+        $client = new \GuzzleHttp\Client([
+            \GuzzleHttp\RequestOptions::VERIFY => \Composer\CaBundle\CaBundle::getSystemCaRootBundlePath(),
+            'base_uri' => self::TELEGRAM_API_BASE_URI,
+        ]);
+
+        \Longman\TelegramBot\Request::setClient($client);      
     }
 
     protected function createTelegramInstance() {
@@ -84,13 +85,11 @@ class TelegramBot
             $telegram->handle();
 
         } catch (TelegramException $e) {
-            TelegramLog::error($e);
+            Log::error($e);
 
-            // Uncomment this to output any errors (ONLY FOR DEVELOPMENT!)
-            echo $e;
         } catch (TelegramLogException $e) {
             // Uncomment this to output log initialisation errors (ONLY FOR DEVELOPMENT!)
-            echo $e;
+            Log::error($e);
         }
     }
 }
